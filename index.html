@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Sip & Paint Date Proposal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Satisfy&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:  #fdf6ec;
+      --blush:  #f0c4b0;
+      --rose:   #d98a78;
+      --terra:  #b85c44;
+      --warm:   #7a3e2e;
+      --gold:   #c89a5a;
+      --ink:    #2e1a14;
+      --sage:   #8aab82;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--ink); overflow-x: hidden; }
+
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.6;
+    }
+
+    .blob { position: fixed; border-radius: 50%; filter: blur(70px); opacity: 0.18; pointer-events: none; z-index: 0; }
+    .blob-1 { width:500px;height:500px;background:var(--blush);top:-120px;left:-150px;animation:drift 18s ease-in-out infinite alternate; }
+    .blob-2 { width:380px;height:380px;background:var(--rose);bottom:-80px;right:-100px;animation:drift 14s ease-in-out infinite alternate-reverse; }
+    .blob-3 { width:260px;height:260px;background:var(--gold);top:40%;left:60%;animation:drift 22s ease-in-out infinite alternate; }
+    .blob-4 { width:200px;height:200px;background:var(--sage);top:70%;left:10%;animation:drift 16s ease-in-out infinite alternate-reverse; }
+    @keyframes drift { from{transform:translate(0,0) scale(1)} to{transform:translate(40px,30px) scale(1.07)} }
+
+    section {
+      position: relative; z-index: 1;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 80px 24px; text-align: center;
+    }
+
+    .section-label { font-family:'Satisfy',cursive; font-size:0.95rem; color:var(--rose); letter-spacing:0.04em; margin-bottom:16px; display:block; }
+    .section-label.light { color:var(--blush); }
+
+    /* ── S1: OPENER ── */
+    #s1 { gap: 0; }
+    .paint-drip { width:100%; max-width:700px; margin-bottom:-2px; display:block; }
+
+    .opener-card {
+      background: white; border: 1.5px solid #e8d5c8;
+      border-radius: 4px 4px 0 0; padding: 60px 40px 50px;
+      max-width: 600px; width: 100%;
+      box-shadow: 0 20px 60px rgba(90,30,10,0.09);
+      animation: riseUp 1s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes riseUp { from{opacity:0;transform:translateY(40px)} to{opacity:1;transform:translateY(0)} }
+
+    .eyebrow { font-family:'Satisfy',cursive; font-size:1rem; color:var(--rose); letter-spacing:0.04em; margin-bottom:18px; display:block; animation:fadeIn 1.2s 0.3s both; }
+
+    h1 { font-family:'Cormorant Garamond',serif; font-size:clamp(2.6rem,6vw,4rem); font-weight:300; line-height:1.15; color:var(--ink); margin-bottom:22px; animation:fadeIn 1.2s 0.5s both; }
+    h1 em { font-style:italic; color:var(--terra); }
+
+    .countdown-strip { display:flex; justify-content:center; gap:20px; margin-bottom:28px; animation:fadeIn 1.2s 0.65s both; }
+    .cd-block { display:flex; flex-direction:column; align-items:center; background:var(--cream); border:1px solid #e8d5c8; border-radius:4px; padding:12px 18px; min-width:64px; }
+    .cd-num { font-family:'Cormorant Garamond',serif; font-size:2rem; font-weight:600; color:var(--terra); line-height:1; }
+    .cd-lbl { font-size:0.65rem; color:#a07060; letter-spacing:0.1em; text-transform:uppercase; margin-top:4px; }
+
+    .sub { font-size:1rem; color:#8a6a60; line-height:1.7; max-width:400px; margin:0 auto 36px; animation:fadeIn 1.2s 0.7s both; }
+    .btn-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; animation:fadeIn 1.2s 0.9s both; }
+
+    .btn { font-family:'DM Sans',sans-serif; font-size:0.9rem; font-weight:400; letter-spacing:0.08em; text-transform:uppercase; padding:14px 34px; border-radius:2px; border:none; cursor:pointer; transition:transform 0.2s, box-shadow 0.2s; }
+    .btn:hover { transform:translateY(-2px); }
+    .btn-yes { background:var(--terra); color:#fff; box-shadow:0 6px 24px rgba(185,92,68,0.35); }
+    .btn-yes:hover { box-shadow:0 10px 30px rgba(185,92,68,0.45); }
+    .btn-no { background:transparent; color:var(--terra); border:1.5px solid var(--blush); }
+    .btn-no:hover { border-color:var(--terra); }
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── S2: PLAN ── */
+    #s2 { background:var(--ink); color:var(--cream); display:none; }
+    #s2.show { display:flex; }
+
+    .plan-heading { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,5vw,3.2rem); font-weight:300; color:#fff; margin-bottom:10px; }
+    .plan-heading em { font-style:italic; color:var(--blush); }
+    .plan-sub { font-size:0.95rem; color:#c8a898; margin-bottom:56px; }
+
+    .cards-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; max-width:780px; width:100%; margin-bottom:50px; }
+    .card { background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:4px; padding:36px 28px 32px; text-align:left; opacity:0; transform:translateY(20px); transition:opacity 0.6s, transform 0.6s; }
+    .card.visible { opacity:1; transform:translateY(0); }
+    .card:hover { background:rgba(255,255,255,0.09); }
+    .card-icon { font-size:2.2rem; margin-bottom:18px; display:block; }
+    .card-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; color:var(--blush); margin-bottom:10px; }
+    .card-desc { font-size:0.88rem; color:#c0a898; line-height:1.7; }
+
+    .reveal-note { font-family:'Satisfy',cursive; font-size:1.25rem; color:var(--gold); opacity:0; transition:opacity 1s 0.5s; }
+    .reveal-note.visible { opacity:1; }
+
+    /* ── S3: SNACKS ── */
+    #s3 { background:#fffaf5; display:none; }
+    #s3.show { display:flex; }
+
+    .snack-wrap { max-width:700px; width:100%; }
+    .snack-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,5vw,3rem); font-weight:300; color:var(--ink); margin-bottom:14px; }
+    .snack-sub { font-size:0.95rem; color:#8a6a60; margin-bottom:44px; line-height:1.7; }
+    .snack-list { display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-bottom:48px; }
+    .snack-tag { background:#fff; border:1.5px solid #e8d5c8; border-radius:50px; padding:10px 22px; font-size:0.88rem; color:var(--terra); display:flex; align-items:center; gap:8px; opacity:0; transform:scale(0.9); transition:opacity 0.4s, transform 0.4s, background 0.2s; box-shadow:0 2px 12px rgba(90,30,10,0.06); }
+    .snack-tag.visible { opacity:1; transform:scale(1); }
+    .snack-tag:hover { background:var(--terra); color:#fff; transform:scale(1.04); }
+    .hot-tag { border-color:#e05030; color:#c03a1a; }
+    .hot-tag:hover { background:#c03a1a !important; }
+    .try-badge { background:#e05030; color:#fff; font-size:0.7rem; padding:2px 8px; border-radius:50px; letter-spacing:0.04em; white-space:nowrap; }
+
+    /* ── S4: GALLERY ── */
+    #s4 { background:var(--cream); display:none; }
+    #s4.show { display:flex; }
+
+    .gallery-wrap { max-width:680px; width:100%; }
+    .gallery-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,2.8rem); font-weight:300; color:var(--ink); margin-bottom:10px; }
+    .gallery-title em { font-style:italic; color:var(--terra); }
+    .gallery-sub { font-size:0.95rem; color:#8a6a60; margin-bottom:44px; }
+
+    .frames-row { display:flex; gap:28px; justify-content:center; flex-wrap:wrap; margin-bottom:36px; }
+    .canvas-frame {
+      width:240px; height:280px; border:3px solid #c8a878; border-radius:2px; background:#fff;
+      position:relative; box-shadow:4px 4px 0 #c8a878, 8px 8px 20px rgba(90,30,10,0.1);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;
+      opacity:0; transform:scale(0.95) rotate(-2deg); transition:opacity 0.6s, transform 0.6s;
+    }
+    .canvas-frame:nth-child(2) { transform:scale(0.95) rotate(2deg); }
+    .canvas-frame.visible { opacity:1; transform:scale(1) rotate(-1.5deg); }
+    .canvas-frame:nth-child(2).visible { transform:scale(1) rotate(1.5deg); }
+    .canvas-frame:hover { transform:scale(1.02) rotate(0deg) !important; z-index:2; }
+
+    .frame-texture { position:absolute; inset:0; background: repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(200,180,160,0.07) 30px,rgba(200,180,160,0.07) 31px), repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(200,180,160,0.07) 30px,rgba(200,180,160,0.07) 31px); }
+    .frame-label { font-family:'Satisfy',cursive; font-size:1.1rem; color:var(--rose); margin-bottom:10px; position:relative; z-index:1; }
+    .frame-placeholder { font-family:'Cormorant Garamond',serif; font-size:3.5rem; color:#e8d5c8; position:relative; z-index:1; line-height:1; }
+    .frame-note { font-size:0.72rem; color:#c0a898; margin-top:10px; position:relative; z-index:1; letter-spacing:0.06em; text-transform:uppercase; }
+
+    .gallery-caption { font-family:'Satisfy',cursive; font-size:1.1rem; color:var(--rose); opacity:0; transition:opacity 1s; }
+    .gallery-caption.visible { opacity:1; }
+
+    /* ── S5: REASONS ── */
+    #s5 { background:var(--ink); display:none; }
+    #s5.show { display:flex; }
+
+    .reasons-wrap { max-width:620px; width:100%; }
+    .reasons-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2rem,4vw,2.8rem); font-weight:300; color:#fff; margin-bottom:10px; }
+    .reasons-title em { font-style:italic; color:var(--blush); }
+    .reasons-sub { font-size:0.9rem; color:#c8a898; margin-bottom:52px; }
+
+    .reason-item { display:flex; gap:24px; text-align:left; margin-bottom:28px; padding-bottom:28px; border-bottom:1px solid rgba(255,255,255,0.07); opacity:0; transform:translateY(16px); transition:opacity 0.6s, transform 0.6s; }
+    .reason-item:last-child { border-bottom:none; margin-bottom:0; }
+    .reason-item.visible { opacity:1; transform:translateY(0); }
+    .reason-num { font-family:'Cormorant Garamond',serif; font-size:2.8rem; font-weight:600; color:rgba(184,92,68,0.3); line-height:1; flex-shrink:0; width:48px; }
+    .reason-text strong { font-family:'Cormorant Garamond',serif; font-size:1.2rem; font-weight:600; color:var(--blush); display:block; margin-bottom:6px; }
+    .reason-text p { font-size:0.88rem; color:#c0a898; line-height:1.7; }
+
+    /* ── S6: LETTER ── */
+    #s6 { background:#fffaf5; display:none; }
+    #s6.show { display:flex; }
+
+    .letter-card {
+      max-width:560px; width:100%; background:#fff; border:1px solid #e8d5c8; border-radius:2px;
+      padding:60px 52px; box-shadow:0 20px 60px rgba(90,30,10,0.08); text-align:left;
+      position:relative; opacity:0; transform:translateY(24px); transition:opacity 0.8s, transform 0.8s;
+    }
+    .letter-card.visible { opacity:1; transform:translateY(0); }
+    .letter-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--terra),var(--rose),var(--gold)); }
+    .letter-date { font-size:0.78rem; color:#c0a898; letter-spacing:0.12em; text-transform:uppercase; margin-bottom:32px; display:block; }
+    .letter-body { font-family:'Cormorant Garamond',serif; font-size:1.15rem; font-weight:300; color:var(--ink); line-height:1.85; margin-bottom:36px; }
+    .letter-body em { font-style:italic; color:var(--terra); }
+    .letter-sign { font-family:'Satisfy',cursive; font-size:1.5rem; color:var(--rose); display:block; }
+
+    /* ── S7: CLOSER ── */
+    #s7 { background:var(--cream); display:none; }
+    #s7.show { display:flex; }
+
+    .closer-inner { max-width:540px; }
+    .big-heart { font-size:5rem; display:block; margin-bottom:20px; animation:heartbeat 1.6s ease-in-out infinite; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.18)} 28%{transform:scale(1)} 42%{transform:scale(1.12)} 56%{transform:scale(1)} }
+    .closer-title { font-family:'Cormorant Garamond',serif; font-size:clamp(2.4rem,5vw,3.4rem); font-weight:300; color:var(--ink); margin-bottom:20px; }
+    .closer-title em { font-style:italic; color:var(--terra); }
+    .closer-sub { font-size:1rem; color:#8a6a60; line-height:1.75; margin-bottom:36px; }
+    .closer-sign { font-family:'Satisfy',cursive; font-size:1.6rem; color:var(--rose); }
+
+    /* ── NO BOUNCE ── */
+    #no-msg { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--ink); color:#fff; font-family:'Cormorant Garamond',serif; font-size:1.1rem; font-style:italic; padding:14px 28px; border-radius:2px; opacity:0; transition:opacity 0.4s; pointer-events:none; z-index:999; white-space:nowrap; }
+    #no-msg.show { opacity:1; }
+
+    /* ── SPLASH ── */
+    .splash { position:fixed;inset:0;z-index:999;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s; }
+    .splash.active { opacity:1;pointer-events:all; }
+    .splash svg { width:100vw;height:100vh;position:absolute;inset:0; }
+
+    /* ── SCROLL CUE ── */
+    .scroll-cue { position:absolute;bottom:32px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;color:#c0a898;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.7; }
+    .scroll-cue .arrow { font-size:1.2rem;animation:bounce 1.5s ease-in-out infinite; }
+    .scroll-cue.dark { color:#5a3a30; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+
+<div class="splash" id="splash">
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <circle cx="720" cy="450" r="0" fill="#b85c44">
+      <animate attributeName="r" values="0;1100" dur="0.55s" fill="freeze"/>
+    </circle>
+  </svg>
+</div>
+
+<!-- ══ S1: OPENER ══ -->
+<section id="s1">
+  <svg class="paint-drip" viewBox="0 0 600 60" fill="none" xmlns="http://www.w3.org/2000/svg" style="max-width:600px;">
+    <path d="M0 0 Q 50 40 100 10 Q 150 -15 200 20 Q 250 50 300 15 Q 350 -10 400 25 Q 450 55 500 18 Q 550 -5 600 20 L600 0Z" fill="#f0c4b0" opacity="0.5"/>
+    <path d="M80 10 Q83 35 80 55 Q79 62 82 55 Q85 40 83 10Z" fill="#d98a78" opacity="0.6"/>
+    <path d="M230 14 Q233 42 230 65 Q229 73 232 65 Q235 46 233 14Z" fill="#b85c44" opacity="0.5"/>
+    <path d="M420 18 Q423 50 420 75 Q419 83 422 75 Q425 54 423 18Z" fill="#d98a78" opacity="0.55"/>
+  </svg>
+
+  <div class="opener-card">
+    <span class="eyebrow">✦ a little something for you because you deserve it ✦</span>
+    <h1>Hey baby,<br/><em>wanna stay in<br/>with me?</em></h1>
+
+    <p class="sub">I know you're not feeling the outside world today and that's totally okay. I have a plan that involves us, paint, and most if not all your favourite snacks 😉</p>
+    <div class="btn-row">
+      <button class="btn btn-yes" onclick="sayYes()">Yes, I want to know more</button>
+      <button class="btn btn-no" id="noBtn" onclick="sayNo()">Hmm, maybe not...</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ S2: PLAN ══ -->
+<section id="s2">
+  <span class="section-label light">✦ the vibe ✦</span>
+  <p class="plan-heading">Here's the <em>vibe</em> I'm going for</p>
+  <p class="plan-sub">Just the two of us, no restaurants, no getting dressed up.</p>
+
+  <div class="cards-grid" id="cardsGrid">
+    <div class="card"><span class="card-icon">🎨</span><div class="card-title">We Paint</div><div class="card-desc">I'll buy canvases, you already have paints and brushes so we'll use those to paint whatever comes to mind.</div></div>
+    <div class="card"><span class="card-icon">🍿</span><div class="card-title">Snacks on Deck</div><div class="card-desc">All your favourites. Because great art deserves great snacks.</div></div>
+    <div class="card"><span class="card-icon">🎵</span><div class="card-title">Playlist on You</div><div class="card-desc">I don't know what vibe you'll go with, but anything works for me.</div></div>
+    <div class="card"><span class="card-icon">📍</span><div class="card-title">Location</div><div class="card-desc">Your place. No need to go anywhere. We'll turn your space into the cosiest little art studio there is.</div></div>
+    <div class="card"><span class="card-icon">👖</span><div class="card-title">Dress Code</div><div class="card-desc">PJs. Comfy and warm. I can bring my onesie for you to hop into — just let me know.</div></div>
+  </div>
+
+  <p class="reveal-note" id="revealNote">Keep scrolling, there's more 👇</p>
+  <div class="scroll-cue"><span class="arrow">↓</span></div>
+</section>
+
+<!-- ══ S3: SNACKS ══ -->
+<section id="s3">
+  <div class="snack-wrap">
+    <span class="section-label">✦ the most important part ✦</span>
+    <h2 class="snack-title">Ri do stress eat together neh biological partner yanga 😂</h2>
+    <p class="snack-sub">Most of your favourite snacks in the building. I can never leave the sour plums out because they are to die for (you act like it when they melt on your tongue).</p>
+
+    <div class="snack-list" id="snackList">
+      <div class="snack-tag">Biltong</div>
+      <div class="snack-tag">Lays</div>
+      <div class="snack-tag">Maynards Sweets</div>
+      <div class="snack-tag">Canned Peaches</div>
+      <div class="snack-tag">Ghost Pops</div>
+      <div class="snack-tag">Paddle Pops</div>
+      <div class="snack-tag">Mini Cheddars</div>
+      <div class="snack-tag hot-tag">Kisses here and there <span class="try-badge">Most definitely</span></div>
+    </div>
+
+    <button class="btn btn-yes" onclick="revealAll()">Show me more</button>
+  </div>
+</section>
+
+<!-- ══ S4: GALLERY ══ -->
+<section id="s4">
+  <div class="gallery-wrap">
+    <span class="section-label">✦ future wall art ✦</span>
+    <h2 class="gallery-title">Where Our <em>Paintings</em> Will Live</h2>
+    <p class="gallery-sub">These frames are waiting. After our date, they won't be empty.</p>
+
+    <div class="frames-row">
+      <div class="canvas-frame" id="frame1">
+        <div class="frame-texture"></div>
+        <span class="frame-label">Yours</span>
+        <span class="frame-placeholder">✦</span>
+        <span class="frame-note">Masterpiece pending</span>
+      </div>
+      <div class="canvas-frame" id="frame2">
+        <div class="frame-texture"></div>
+        <span class="frame-label">Mine</span>
+        <span class="frame-placeholder">✦</span>
+        <span class="frame-note">Masterpiece pending</span>
+      </div>
+    </div>
+
+    <p class="gallery-caption" id="galleryCaption">Two canvases. One moment. A memory that stays on the wall. 🖼️</p>
+  </div>
+  <div class="scroll-cue dark"><span class="arrow">↓</span></div>
+</section>
+
+<!-- ══ S5: REASONS ══ -->
+<section id="s5">
+  <div class="reasons-wrap">
+    <span class="section-label light">✦ in case you were wondering ✦</span>
+    <h2 class="reasons-title">Why I Wanted to Do<br/><em>This With You</em></h2>
+    <p class="reasons-sub">Not a date proposal without a proper reason list.</p>
+
+    <div id="reasonsList">
+      <div class="reason-item">
+        <span class="reason-num">01</span>
+        <div class="reason-text">
+          <strong>Because you deserve a whole day that's just for you</strong>
+        </div>
+      </div>
+      <div class="reason-item">
+        <span class="reason-num">02</span>
+        <div class="reason-text">
+          <strong>Because painting with you sounds like a really good idea</strong>
+          <p>Creative, a little chaotic, probably ending with paint where it shouldn't be and there's no one I'd rather experience that with my love.</p>
+        </div>
+      </div>
+      <div class="reason-item">
+        <span class="reason-num">03</span>
+        <div class="reason-text">
+          <strong>Because I want to make a memory that actually stays</strong>
+          <p>We can put those paintings on a wall somewhere one day and say we made those together on a random day when we had nowhere else to be.</p>
+        </div>
+      </div>
+      </div>
+      <div class="reason-item">
+        <span class="reason-num">05</span>
+        <div class="reason-text">
+          <strong>Because being around you just feels like home</strong>
+          <p>That's the whole reason. Everything else is just details.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-cue" style="color:#5a3a30;"><span class="arrow">↓</span></div>
+</section>
+
+<!-- ══ S6: LETTER ══ -->
+<section id="s6">
+  <div class="letter-card" id="letterCard">
+    <span class="letter-date" id="letterDate"></span>
+    <div class="letter-body">
+      Hey baby,<br/><br/>
+      I've been thinking about our call last night. Seeing you cry and not having the right
+      words to say or a way to make you feel better in that moment sucked.
+      I hate that you are carrying so much right now and I know today probably feels just as heavy<br/><br/>
+      
+      I just want to be close to you, right there on the floor with a canvas, something messy, your favourite snacks and no expectations at all.<br/><br/>
+
+      You don't have to be on. You don't have to be anything. Just <em>you</em> that's already more than enough for me.<br/><br/>
+
+      I thought about what would make you smile and take your mind off thigs, and I think this is it. Paint, snacks, PJs, your playlist and <em>us.</em><br/><br/>
+      
+      So let me come over? I'll handle everything else.
+    </div>
+    <span class="letter-sign">your girlfriend, Thabitha x</span>
+  </div>
+</section>
+
+<!-- ══ S7: CLOSER ══ -->
+<section id="s7">
+  <div class="closer-inner">
+    <span class="big-heart">❤</span>
+    <h2 class="closer-title">It's a date then,<br/><em>mama.</em></h2>
+    <p class="closer-sub">No heels, no traffic and definitely no restaurants. Just you, me, a canvas and a reason to make a little mess together. I can't wait to see what you paint, hape o artist wena😜.</p>
+    <p class="closer-sign">— yours always, Thabitha </p>
+  </div>
+</section>
+
+<div id="no-msg">Nice try 😏 — but you know you want to!</div>
+
+<script>
+  // ── CHANGE THIS to your actual date ──
+  const DATE_TARGET = new Date('2025-05-03T14:00:00');
+
+  function updateCountdown() {
+    if (!document.getElementById('cd-d')) return;
+    const diff = DATE_TARGET - new Date();
+    if (diff <= 0) {
+      const cd = document.getElementById('countdown');
+      if (cd) cd.innerHTML = '<p style="font-family:\'Satisfy\',cursive;color:var(--rose);font-size:1.1rem;">It\'s today! \uD83C\uDFA8\uD83E\uDE77</p>';
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('cd-d').textContent = String(d).padStart(2,'0');
+    document.getElementById('cd-h').textContent = String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent = String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent = String(s).padStart(2,'0');
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  const ldEl = document.getElementById('letterDate');
+  if (ldEl) ldEl.textContent = new Date().toLocaleDateString('en-ZA',{day:'numeric',month:'long',year:'numeric'});
+
+  // ── NO BUTTON ──
+  const noMessages = [
+    "Nice try 😏 but you know you want to!",
+    "Come on, you love me right?",
+    "I'll add more snacks... 🍿",
+    "There's sour plums on the list 👀",
+    "Last chance before I cryyyyyy 🥺",
+    "Alright fine… I'm crying 😭",
+    "You can't resist, it's basically law 💕",
+  ];
+  let noCount = 0;
+
+  function sayNo() {
+    const msg = document.getElementById('no-msg');
+    msg.textContent = noMessages[Math.min(noCount, noMessages.length - 1)];
+    msg.classList.add('show');
+    noCount++;
+    setTimeout(() => msg.classList.remove('show'), 2800);
+    const btn = document.getElementById('noBtn');
+    if (noCount < 6) {
+      btn.style.fontSize = Math.max(0.5, 0.9 - noCount * 0.07) + 'rem';
+      btn.style.opacity = Math.max(0.25, 1 - noCount * 0.14);
+    } else {
+      btn.style.display = 'none';
+    }
+  }
+
+  // ── YES ──
+  function sayYes() {
+    const splash = document.getElementById('splash');
+    splash.classList.add('active');
+    setTimeout(() => {
+      document.getElementById('s2').classList.add('show');
+      document.getElementById('s1').style.display = 'none';
+      document.getElementById('s2').scrollIntoView({ behavior:'instant' });
+      splash.classList.remove('active');
+      splash.style.display = 'none';
+      setTimeout(animateCards, 300);
+    }, 600);
+  }
+
+  function animateCards() {
+    document.querySelectorAll('.card').forEach((c, i) => {
+      setTimeout(() => c.classList.add('visible'), i * 150);
+    });
+    setTimeout(() => document.getElementById('revealNote').classList.add('visible'), 900);
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          document.getElementById('s3').classList.add('show');
+          animateSnacks();
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    obs.observe(document.getElementById('s2'));
+  }
+
+  function animateSnacks() {
+    document.querySelectorAll('.snack-tag').forEach((t, i) => {
+      setTimeout(() => t.classList.add('visible'), i * 80);
+    });
+  }
+
+  // ── REVEAL REMAINING SECTIONS ──
+  function revealAll() {
+    ['s4','s5','s6','s7'].forEach(id => document.getElementById(id).classList.add('show'));
+    setTimeout(() => document.getElementById('s4').scrollIntoView({ behavior:'smooth' }), 100);
+    setTimeout(setupObservers, 400);
+  }
+
+  function setupObservers() {
+    // Gallery frames
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => document.getElementById('frame1').classList.add('visible'), 100);
+        setTimeout(() => document.getElementById('frame2').classList.add('visible'), 300);
+        setTimeout(() => document.getElementById('galleryCaption').classList.add('visible'), 600);
+      }
+    }, { threshold: 0.2 }).observe(document.getElementById('s4'));
+
+    // Reasons
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        document.querySelectorAll('.reason-item').forEach((el, i) => {
+          setTimeout(() => el.classList.add('visible'), i * 150);
+        });
+      }
+    }, { threshold: 0.15 }).observe(document.getElementById('s5'));
+
+    // Letter
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) document.getElementById('letterCard').classList.add('visible');
+    }, { threshold: 0.2 }).observe(document.getElementById('s6'));
+  }
+
+  // Snack observer for scroll re-entry
+  new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) animateSnacks();
+  }, { threshold: 0.2 }).observe(document.getElementById('s3'));
+</script>
+</body>
+</html>
